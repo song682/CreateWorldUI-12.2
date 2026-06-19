@@ -1,0 +1,15 @@
+{
+  "package": "decok.dfcdvadstf.createworldui.mixin",
+  "plugin": "decok.dfcdvadstf.createworldui.mixin.CrWUIMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.createworldui.refmap.json",
+  "target": "@env(DEFAULT)",
+  "mixins": [],
+  "client": [
+    "middle.MixinModernCreateWorld",
+    "middle.MixinGuiSelectWorld",
+    "access.IGuiCreateWorldAccess"
+  ],
+  "required": true,
+  "minVersion": "0.8.5"
+}
