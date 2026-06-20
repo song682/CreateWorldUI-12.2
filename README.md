@@ -14,10 +14,6 @@ dependencies {
 ```
 to your build.gradle(.kts) to use it. 
 
-## Credits
-
-[This website](https://mappings.dev/1.8.8/index.html) helped me to solve the issue of obfuscated name.
-
 ## Licence
 
 Code - [MIT Licence](LICENSE)    
