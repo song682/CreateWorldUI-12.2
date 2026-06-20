@@ -9,7 +9,7 @@ This mod is focused on the backporting of modern creating world GUI (After 23w05
 Use jitpack, add 
 ```gradle
 dependencies {
-	implementation 'com.github.song682:CreateWorldUI:Tag'
+	implementation 'com.github.song682:CreateWorldUI-12.2:Tag'
 }
 ```
 to your build.gradle(.kts) to use it. 
