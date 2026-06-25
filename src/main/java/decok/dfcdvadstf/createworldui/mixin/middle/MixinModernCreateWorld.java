@@ -1,6 +1,7 @@
 package decok.dfcdvadstf.createworldui.mixin.middle;
 
 import decok.dfcdvadstf.createworldui.api.ContentPanelRenderer;
+import decok.dfcdvadstf.createworldui.api.DifficultyApplier;
 import decok.dfcdvadstf.createworldui.api.GuiCyclableButton;
 import decok.dfcdvadstf.createworldui.api.gamerule.GameRuleApplier;
 import decok.dfcdvadstf.createworldui.api.gamerule.GameRuleMonitorNSetter;
@@ -355,6 +356,11 @@ public abstract class MixinModernCreateWorld extends GuiScreen {
         // 处理创建按钮——不再需要同步状态，Tab 输入已通过 IGuiCreateWorldAccess
         // 实时写到原版字段。
         if (button.id == 0) {
+            // Sync difficulty lock state before world creation
+            // 在创建世界前同步难度锁定状态
+            if (modernWorldCreatingUI$tabManager != null) {
+                DifficultyApplier.setDifficultyLocked(modernWorldCreatingUI$tabManager.isDifficultyLocked());
+            }
             // 让原版继续处理创建逻辑
             return;
         }

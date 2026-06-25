@@ -29,7 +29,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.12.2-0.0.1'
+version = '1.12.2-0.0.2'
 group = 'decok.dfcdvadstf.createworldui' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'ModernCreateWorldUI'
 

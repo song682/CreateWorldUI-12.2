@@ -39,6 +39,14 @@ public class TabManager {
      */
     private EnumDifficulty difficulty = EnumDifficulty.NORMAL;
 
+    /**
+     * <p>
+     *     是否锁定难度按钮（启用锁按钮时使用）<br>
+     *     Whether the difficulty button is locked (used when lock button is enabled)
+     * </p>
+     */
+    private boolean difficultyLocked = false;
+
     public TabManager(GuiCreateWorld parent, List<GuiButton> buttonList, int width, int height) {
         this.parent = parent;
         this.buttonList = buttonList;
@@ -256,6 +264,27 @@ public class TabManager {
         System.out.println("TabManager: Difficulty set to: " + difficulty);
         Minecraft.getMinecraft().gameSettings.difficulty = difficulty;
         Minecraft.getMinecraft().gameSettings.saveOptions();
+    }
+
+    // === Difficulty Lock / 难度锁定 ===
+
+    /**
+     * <p>
+     *     获取难度是否被锁定<br>
+     *     Get whether difficulty is locked
+     * </p>
+     */
+    public boolean isDifficultyLocked() { return difficultyLocked; }
+
+    /**
+     * <p>
+     *     设置难度锁定状态<br>
+     *     Set whether difficulty is locked
+     * </p>
+     */
+    public void setDifficultyLocked(boolean locked) {
+        this.difficultyLocked = locked;
+        System.out.println("TabManager: Difficulty locked set to: " + locked);
     }
 
     /**

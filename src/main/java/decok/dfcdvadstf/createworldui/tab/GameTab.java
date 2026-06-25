@@ -5,6 +5,7 @@ import decok.dfcdvadstf.createworldui.api.GuiCyclableButton;
 import decok.dfcdvadstf.createworldui.api.tab.AbstractScreenTab;
 import decok.dfcdvadstf.createworldui.api.tab.TabManager;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLockIconButton;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.world.EnumDifficulty;
@@ -14,6 +15,9 @@ public class GameTab extends AbstractScreenTab {
     private GuiCyclableButton gameModeButton;
     private GuiCyclableButton allowCheatsButton;
     private GuiCyclableButton difficultyButton;
+    private GuiLockIconButton difficultyLockButton;
+    /** 用户在非硬核模式下手动设置的锁定状态（进入硬核前保存，退出后恢复） */
+    private boolean userSetDifficultyLocked = false;
 
     public GameTab() {
         super(100, "createworldui.tab.game");
@@ -51,8 +55,9 @@ public class GameTab extends AbstractScreenTab {
 
         // Create difficulty button
         // 创建难度按钮
+        int diffBtnWidth = CreateWorldUI.config.enableLock ? 188 : 208;
         difficultyButton = new GuiCyclableButton(9, width / 2 - 104, height / 2 + 25,
-                208, 20, this::getDifficultyText, direction -> {
+                diffBtnWidth, 20, this::getDifficultyText, direction -> {
             if (!getHardcore()) {
                 cycleDifficulty();
             } else {
@@ -60,6 +65,15 @@ public class GameTab extends AbstractScreenTab {
             }
         });
         addButton(difficultyButton);
+
+        // Create difficulty lock button (only when enabled)
+        // 创建难度锁定按钮（仅在启用时）
+        if (CreateWorldUI.config.enableLock) {
+            difficultyLockButton = new GuiLockIconButton(10, width / 2 - 104 + diffBtnWidth, height / 2 + 25);
+            difficultyLockButton.setLocked(false);
+            userSetDifficultyLocked = false;
+            addButton(difficultyLockButton);
+        }
 
         // Create allow cheats button
         // 创建允许作弊按钮
@@ -108,11 +122,53 @@ public class GameTab extends AbstractScreenTab {
         // 根据硬核模式更新允许作弊按钮以及难度状态
         // Update allow cheats button and difficulty status based on hardcore mode
         // 根据硬核模式更新允许作弊按钮
-        if (difficultyButton != null) difficultyButton.enabled = !getHardcore();
+        if (difficultyButton != null) {
+            if (getHardcore()) {
+                difficultyButton.enabled = false;
+                // 硬核模式下强制锁定难度
+                if (difficultyLockButton != null) {
+                    if (!difficultyLockButton.isLocked()) {
+                        // 保存用户进入硬核前的锁定状态
+                        userSetDifficultyLocked = difficultyLockButton.isLocked();
+                    }
+                    difficultyLockButton.setLocked(true);
+                    difficultyLockButton.enabled = false;
+                    tabManager.setDifficultyLocked(true);
+                }
+            } else {
+                // 非硬核模式下，难度按钮的启用状态取决于锁按钮的状态
+                if (difficultyLockButton != null) {
+                    // 从硬核切换回来时，恢复用户之前设定的锁定状态
+                    difficultyLockButton.setLocked(userSetDifficultyLocked);
+                    difficultyLockButton.enabled = true;
+                    difficultyButton.enabled = !userSetDifficultyLocked;
+                    tabManager.setDifficultyLocked(userSetDifficultyLocked);
+                } else {
+                    difficultyButton.enabled = true;
+                }
+            }
+        }
     }
 
     @Override
     public void actionPerformed(GuiButton button) {
+        // Handle difficulty lock button
+        // 处理难度锁定按钮
+        if (button == difficultyLockButton) {
+            if (getHardcore()) {
+                // 硬核模式下强制锁定，不允许解锁
+                return;
+            }
+            boolean newLocked = !difficultyLockButton.isLocked();
+            difficultyLockButton.setLocked(newLocked);
+            userSetDifficultyLocked = newLocked;
+            tabManager.setDifficultyLocked(newLocked);
+            if (difficultyButton != null) {
+                difficultyButton.enabled = !newLocked;
+            }
+            return;
+        }
+
         // 循环按钮的逻辑已在创建时定义，无需在此处理
         // 此方法保留用于处理其他类型的按钮事件
         // Cycling buttons' logic is handled in the creation, no need to process here
@@ -178,6 +234,24 @@ public class GameTab extends AbstractScreenTab {
         }
         if (difficultyButton != null) {
             difficultyButton.enabled = !getHardcore();
+            // 同步锁定状态
+            if (difficultyLockButton != null) {
+                if (getHardcore()) {
+                    // 进入硬核时保存用户锁定状态
+                    if (!difficultyLockButton.isLocked()) {
+                        userSetDifficultyLocked = difficultyLockButton.isLocked();
+                    }
+                    difficultyLockButton.setLocked(true);
+                    difficultyLockButton.enabled = false;
+                    tabManager.setDifficultyLocked(true);
+                } else {
+                    // 从硬核退出时恢复用户之前设定的锁定状态
+                    difficultyLockButton.setLocked(userSetDifficultyLocked);
+                    difficultyLockButton.enabled = true;
+                    difficultyButton.enabled = !userSetDifficultyLocked;
+                    tabManager.setDifficultyLocked(userSetDifficultyLocked);
+                }
+            }
             difficultyButton.updateText();
         }
     }
