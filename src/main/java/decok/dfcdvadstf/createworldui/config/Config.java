@@ -17,6 +17,8 @@ public class Config {
     public boolean showWorldNamePlaceHolder;
     public boolean disableCreateButtonWhenWNIsBlank;
     public boolean enableLock;
+    public boolean enableWorldSettings;
+    public boolean allowUnlock;
 
     public Config(File file) {
         configFile = new Configuration(file);
@@ -57,6 +59,14 @@ public class Config {
         enableLock = configFile.getBoolean("enableLock", "UI Management", false, 
             "Set True to enable the Difficulty Lock button next to the difficulty selector");
         configFile.getCategory("ui management").get("enableLock").setLanguageKey("config.option.enableLock");
+        
+        enableWorldSettings = configFile.getBoolean("enableWorldSettings", "UI Management", true, 
+            "Set True to replace the vanilla difficulty & lock buttons in the Options screen with a World Settings button");
+        configFile.getCategory("ui management").get("enableWorldSettings").setLanguageKey("config.option.enableWorldSettings");
+        
+        allowUnlock = configFile.getBoolean("allowUnlock", "UI Management", false, 
+            "Set True to allow unlocking the difficulty after it is locked");
+        configFile.getCategory("ui management").get("allowUnlock").setLanguageKey("config.option.allowUnlock");
         
         // GameRule Editor category options
         // 游戏规则编辑器分类配置项

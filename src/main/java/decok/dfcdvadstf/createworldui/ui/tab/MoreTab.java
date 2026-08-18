@@ -1,10 +1,10 @@
-package decok.dfcdvadstf.createworldui.tab;
+package decok.dfcdvadstf.createworldui.ui.tab;
 
 import decok.dfcdvadstf.createworldui.CreateWorldUI;
 import decok.dfcdvadstf.createworldui.api.gamerule.GameRuleApplier;
 import decok.dfcdvadstf.createworldui.api.tab.AbstractScreenTab;
 import decok.dfcdvadstf.createworldui.api.tab.TabManager;
-import decok.dfcdvadstf.createworldui.gamerule.GuiScreenGameRuleEditor;
+import decok.dfcdvadstf.createworldui.ui.gamerule.GuiScreenGameRuleEditor;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.resources.I18n;
 

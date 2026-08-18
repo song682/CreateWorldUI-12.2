@@ -30,6 +30,17 @@ createworldui.button.selectWorld.difficulty.hard=困难
 createworldui.button.selectWorld.difficulty.hard.tooltip=
 createworldui.worldTypeSettings=世界类型设置
 createworldui.button.gameRuleEditor=游戏规则
+createworldui.button.worldSettings=世界设置...
+
+# 世界设置界面
+createworldui.worldsettings.title=世界设置
+createworldui.lock.confirm.title=锁定难度？
+createworldui.lock.confirm.line=这将把难度锁定为：%s
+createworldui.unlock.confirm.title=解锁难度？
+createworldui.unlock.confirm.line=你确定要解锁难度吗？
+createworldui.gamerules.tooltip.needCreativeAndCheats=需要创造模式并开启作弊
+createworldui.gamerules.tooltip.needCreative=需要创造模式
+createworldui.gamerules.tooltip.needCheats=需要开启作弊
 
 # 外字
 createworldui.selectWorld.bonusItems=奖励箱
@@ -106,3 +117,7 @@ config.option.showWorldNamePlaceHolder=显示世界名称占位符
 config.option.showWorldNamePlaceHolder.tooltip=显示占位符以温和地提醒玩家添加自己的世界名称
 config.option.disableCreateButtonWhenWNIsBlank=世界名称为空时禁用创建按钮
 config.option.disableCreateButtonWhenWNIsBlank.tooltip=设置为 true 以在世界名称为空时禁用创建按钮
+config.option.enableWorldSettings=启用世界设置按钮
+config.option.enableWorldSettings.tooltip=设置为 true 以在选项界面用世界设置按钮替换原版难度与锁定按钮
+config.option.allowUnlock=允许解锁难度
+config.option.allowUnlock.tooltip=设置为 true 以允许在锁定后解锁难度

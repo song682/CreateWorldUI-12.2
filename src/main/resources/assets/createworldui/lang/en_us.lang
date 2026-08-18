@@ -31,6 +31,17 @@ createworldui.button.selectWorld.difficulty.hard=Hard
 createworldui.button.selectWorld.difficulty.hard.tooltip=
 createworldui.worldTypeSettings=World Type Settings
 createworldui.button.gameRuleEditor=Game Rules
+createworldui.button.worldSettings=World Settings...
+
+## World Settings Screen
+createworldui.worldsettings.title=World Settings
+createworldui.lock.confirm.title=Lock difficulty?
+createworldui.lock.confirm.line=This will lock the difficulty to: %s
+createworldui.unlock.confirm.title=Unlock difficulty?
+createworldui.unlock.confirm.line=Are you sure you want to unlock the difficulty?
+createworldui.gamerules.tooltip.needCreativeAndCheats=Requires Creative mode and cheats enabled
+createworldui.gamerules.tooltip.needCreative=Requires Creative mode
+createworldui.gamerules.tooltip.needCheats=Requires cheats enabled
 
 ## For Replacements
 createworldui.selectWorld.bonusItems=Bonus Chest
@@ -114,6 +125,10 @@ config.option.showWorldNamePlaceHolder=Show World Name Placeholder
 config.option.showWorldNamePlaceHolder.tooltip=Show a place-holder to gently reminds player to add a own world name
 config.option.disableCreateButtonWhenWNIsBlank=Disable Create Button When World Name Is Blank
 config.option.disableCreateButtonWhenWNIsBlank.tooltip=Set True to disable the Create Button when world name is blank
+config.option.enableWorldSettings=Enable World Settings Button
+config.option.enableWorldSettings.tooltip=Set True to replace the vanilla difficulty & lock buttons in the Options screen with a World Settings button
+config.option.allowUnlock=Allow Unlocking Difficulty
+config.option.allowUnlock.tooltip=Set True to allow unlocking the difficulty after it is locked
 
 # GameRule Editor Notifications
 createworldui.gamerules.notification.changed=The following game rules have been changed:

@@ -9,6 +9,7 @@
     "middle.MixinModernCreateWorld",
     "middle.MixinGuiSelectWorld",
     "middle.MixinIntegratedServer",
+    "middle.MixinGuiOptions",
     "access.IGuiCreateWorldAccess"
   ],
   "required": true,
