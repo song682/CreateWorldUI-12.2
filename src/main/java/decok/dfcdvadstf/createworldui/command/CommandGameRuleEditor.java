@@ -1,6 +1,7 @@
 package decok.dfcdvadstf.createworldui.command;
 
 import decok.dfcdvadstf.createworldui.CreateWorldUI;
+import decok.dfcdvadstf.createworldui.api.gamerule.GameRuleMonitorNSetter;
 import decok.dfcdvadstf.createworldui.ui.gamerule.GuiScreenGameRuleEditor;
 import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.client.Minecraft;
@@ -63,7 +64,9 @@ public class CommandGameRuleEditor extends CommandBase {
 
         // Get current world's game rules
         // 获取当前世界的游戏规则
-        World world = Minecraft.getMinecraft().world;
+        // 从服务端世界读取，确保能拿到模组新增的规则（客户端副本仅含原版默认值）
+        // Read from the server world so mod-added rules are included (client copy has vanilla defaults only)
+        World world = GameRuleMonitorNSetter.getRuleSourceWorld();
         Map<String, String> gameRules = new HashMap<>();
 
         if (world != null) {

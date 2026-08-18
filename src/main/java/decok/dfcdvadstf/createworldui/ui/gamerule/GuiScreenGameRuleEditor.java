@@ -186,9 +186,11 @@ public class GuiScreenGameRuleEditor extends GuiScreen {
 
         // Method 2: try getting from the real world
         // 方法 2: 尝试从真实世界获取
+        // 优先服务端世界，确保能拿到模组新增的规则（客户端副本仅含原版默认值）
+        // Prefer the server world so mod-added rules are included (client copy has vanilla defaults only)
         if (defaultsFromMonitor == null || defaultsFromMonitor.isEmpty()) {
             try {
-                World w = Minecraft.getMinecraft() != null ? Minecraft.getMinecraft().world : null;
+                World w = GameRuleMonitorNSetter.getRuleSourceWorld();
                 if (w != null) {
                     defaultsFromMonitor = GameRuleMonitorNSetter.getAllGamerules(w);
                 }

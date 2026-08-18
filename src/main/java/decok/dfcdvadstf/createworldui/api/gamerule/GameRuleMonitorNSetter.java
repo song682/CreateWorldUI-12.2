@@ -1,6 +1,7 @@
 package decok.dfcdvadstf.createworldui.api.gamerule;
 
 import decok.dfcdvadstf.createworldui.Tags;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -88,6 +89,45 @@ public class GameRuleMonitorNSetter {
                 return stringValue;
             }
         }
+    }
+
+    /**
+     * <p>
+     *     获取用于读取游戏规则的世界对象。<br>
+     *     优先返回集成服务端的主世界（WorldServer），因为客户端 WorldClient 的 GameRules<br>
+     *     仅是由 {@code new WorldInfo(settings, "MpServer")} 构造的原版默认值副本，<br>
+     *     且服务端从不向客户端同步整套规则，模组新增的规则只存在于服务端世界。<br>
+     *     无集成服务端（如连接远程服务器）时回退到客户端世界副本。
+     * </p>
+     * <p>
+     *     Get the world object used for reading game rules.<br>
+     *     Prefer the integrated server's overworld (WorldServer), because the client<br>
+     *     WorldClient's GameRules is only a vanilla-default copy built by<br>
+     *     {@code new WorldInfo(settings, "MpServer")}, and the server never syncs the<br>
+     *     full rule set to the client; mod-added rules exist solely in the server world.<br>
+     *     Falls back to the client world copy when there is no integrated server
+     *     (e.g. connected to a remote server).
+     * </p>
+     * @return 用于读取规则的世界，若无可用世界则返回null / World for reading rules, null if none available
+     */
+    public static World getRuleSourceWorld() {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc == null) {
+            return null;
+        }
+
+        // 优先集成服务端主世界（包含模组新增的规则）
+        // Prefer the integrated server's overworld (contains mod-added rules)
+        if (mc.getIntegratedServer() != null
+                && mc.getIntegratedServer().worlds != null
+                && mc.getIntegratedServer().worlds.length > 0
+                && mc.getIntegratedServer().worlds[0] != null) {
+            return mc.getIntegratedServer().worlds[0];
+        }
+
+        // 兜底：客户端世界副本（仅含原版默认规则）
+        // Fallback: client world copy (vanilla defaults only)
+        return mc.world;
     }
 
     /**

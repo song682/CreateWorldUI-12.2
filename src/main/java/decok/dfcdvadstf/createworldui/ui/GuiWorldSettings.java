@@ -238,22 +238,12 @@ public class GuiWorldSettings extends GuiScreen implements GuiYesNoCallback {
      */
     private void openGameRuleEditor() {
         Map<String, String> currentRules = new HashMap<>();
-        // 必须从服务端世界读取规则：客户端 WorldClient 的 GameRules 只是服务端同步的副本，
-        // 模组新增的规则只存在于服务端世界。
+        // 必须从服务端世界读取规则：客户端 WorldClient 的 GameRules 只是原版默认值副本（并非同步副本），
+        // 模组新增的规则只存在于服务端世界。（统一通过 getRuleSourceWorld() 选择规则来源）
         // Must read rules from the SERVER-side world: the client WorldClient GameRules is
-        // only a synced copy; mod-added rules exist solely in the server world.
-        World ruleSource = null;
-        if (mc.getIntegratedServer() != null
-            && mc.getIntegratedServer().worlds != null
-            && mc.getIntegratedServer().worlds.length > 0
-            && mc.getIntegratedServer().worlds[0] != null) {
-            ruleSource = mc.getIntegratedServer().worlds[0];
-        }
-        // 兜底：无集成服务端时退回客户端副本
-        // Fallback: use the client copy when there is no integrated server
-        if (ruleSource == null) {
-            ruleSource = mc.world;
-        }
+        // only a vanilla-default copy (not a synced copy); mod-added rules exist solely in
+        // the server world. (Rule source unified via getRuleSourceWorld())
+        World ruleSource = GameRuleMonitorNSetter.getRuleSourceWorld();
         if (ruleSource != null) {
             Map<String, GameruleValue> allRules = GameRuleMonitorNSetter.getAllGamerules(ruleSource);
             for (Map.Entry<String, GameruleValue> entry : allRules.entrySet()) {
