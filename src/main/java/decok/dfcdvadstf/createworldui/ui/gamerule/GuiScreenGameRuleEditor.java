@@ -2,6 +2,7 @@ package decok.dfcdvadstf.createworldui.ui.gamerule;
 
 import decok.dfcdvadstf.createworldui.CreateWorldUI;
 import decok.dfcdvadstf.createworldui.api.ContentPanelRenderer;
+import decok.dfcdvadstf.createworldui.api.GuiCyclableButton;
 import decok.dfcdvadstf.createworldui.api.gamerule.*;
 import decok.dfcdvadstf.createworldui.api.gamerule.GameRuleMonitorNSetter.GameruleValue;
 import net.minecraft.client.Minecraft;
@@ -543,21 +544,15 @@ public class GuiScreenGameRuleEditor extends GuiScreen {
         int componentX = this.width / 2 + 90;
         int componentWidth = 44;
 
-        // Boolean button
-        // 布尔按钮
+        // Boolean button (cyclable: supports cycling via both click and scroll wheel)
+        // 布尔按钮（轮换式：支持点击和滚轮切换）
         if (value instanceof Boolean) {
-            boolean boolValue = (Boolean) value;
-            String display = boolValue ? I18n.format("options.on") : I18n.format("options.off");
+            GuiCyclableButton button = new GuiCyclableButton(id, componentX, yPos, componentWidth, 20,
+                    () -> getBooleanRuleText(ruleName),
+                    direction -> toggleBooleanRule(ruleName));
 
-            GuiButton button = new GuiButton(id, componentX, yPos, componentWidth, 20, display);
-
-            // Ensure button is not null before adding to buttonList
-            // 确保按钮不为 null 再添加到 buttonList
-            if (button != null) {
-                this.buttonList.add(button);
-                return new GuiComponentWrapper(button, ComponentType.BOOLEAN_BUTTON);
-            }
-            return null;
+            this.buttonList.add(button);
+            return new GuiComponentWrapper(button, ComponentType.BOOLEAN_BUTTON);
         }
 
         // Number/string: use text field
@@ -610,31 +605,10 @@ public class GuiScreenGameRuleEditor extends GuiScreen {
                 return;
         }
 
-        // 处理布尔值按钮（ID >= 100）
-        // Handle boolean buttons (ID >= 100)
-        if (id >= 100) {
-            // 通过按钮ID找到对应的控件，然后获取规则名
-            // Find component by button ID, then get rule name
-            String ruleName = null;
-            for (Map.Entry<String, GuiComponentWrapper> entry : ruleComponents.entrySet()) {
-                if (entry.getValue().component instanceof GuiButton) {
-                    GuiButton btn = (GuiButton) entry.getValue().component;
-                    if (btn.id == id) {
-                        ruleName = entry.getValue().ruleName;
-                        break;
-                    }
-                }
-            }
-            
-            if (ruleName == null || !defaultRules.containsKey(ruleName)) {
-                return;
-            }
-
-            GuiComponentWrapper wrapper = ruleComponents.get(ruleName);
-            if (wrapper != null && wrapper.type == ComponentType.BOOLEAN_BUTTON) {
-                toggleBooleanRule(ruleName, button);
-            }
-        }
+        // 布尔值轮换按钮（ID >= 100）的切换逻辑已在其 CycleHandler 中处理（点击/滚轮时自动触发），
+        // 此处无需再处理
+        // Boolean cyclable buttons (ID >= 100) are toggled within their CycleHandler
+        // (triggered automatically on click/scroll), no handling needed here
     }
 
     /**
@@ -656,29 +630,47 @@ public class GuiScreenGameRuleEditor extends GuiScreen {
     }
 
     /**
-     * 获取当前游戏规则ID所对应的布尔值（modified > editable > default）<br>
-     * Get the boolean value of current Rule name, priority is modified > editable > default
+     * 获取当前游戏规则ID所对应的布尔值（modified > editable > default），并将其取反保存。<br>
+     * 按钮显示文本由轮换按钮的 TextSupplier 自动刷新，无需手动更新。<br>
+     * Get the boolean value of current Rule name, priority is modified > editable > default, then toggle and save it.<br>
+     * Button display text is refreshed automatically by the cyclable button's TextSupplier, no manual update needed.
      */
-    private void toggleBooleanRule(String ruleName, GuiButton button) {
+    private void toggleBooleanRule(String ruleName) {
         // 获取当前游戏规则ID所对应的布尔值（modified > editable > default）
         // Get the boolean value of current Rule name.
-        String curStr = null;
-        if (modifiedRules.containsKey(ruleName)) curStr = modifiedRules.get(ruleName);
-        else if (editableRules.containsKey(ruleName)) curStr = editableRules.get(ruleName);
-        else {
-            GameruleValue def = defaultRules.get(ruleName);
-            curStr = (def != null) ? String.valueOf(def.getOptimalValue()) : "false";
-        }
+        String curStr = getBooleanRuleTextValue(ruleName);
 
         boolean cur = Boolean.parseBoolean(curStr);
         boolean next = !cur;
         // 保存为 String
         // Save as String
         modifiedRules.put(ruleName, String.valueOf(next));
+    }
 
-        // 更新按钮文本
-        // Update the Button text.
-        button.displayString = next ? I18n.format("options.on") : I18n.format("options.off");
+    /**
+     * 读取布尔规则当前值的字符串形式（优先级：modified > editable > default）
+     * Read the string form of a boolean rule's current value (priority: modified > editable > default)
+     *
+     * @param ruleName 规则名称 / Rule name
+     * @return 规则值的字符串形式（"true"/"false"）/ String form of the rule value ("true"/"false")
+     */
+    private String getBooleanRuleTextValue(String ruleName) {
+        if (modifiedRules.containsKey(ruleName)) return modifiedRules.get(ruleName);
+        if (editableRules.containsKey(ruleName)) return editableRules.get(ruleName);
+        GameruleValue def = defaultRules.get(ruleName);
+        return (def != null) ? String.valueOf(def.getOptimalValue()) : "false";
+    }
+
+    /**
+     * 供布尔规则轮换按钮的 TextSupplier 使用，返回本地化后的 ON/OFF 显示文本
+     * Used by the boolean rule cyclable button's TextSupplier, returns localized ON/OFF display text
+     *
+     * @param ruleName 规则名称 / Rule name
+     * @return 本地化的 ON/OFF 文本 / Localized ON/OFF text
+     */
+    private String getBooleanRuleText(String ruleName) {
+        return Boolean.parseBoolean(getBooleanRuleTextValue(ruleName))
+                ? I18n.format("options.on") : I18n.format("options.off");
     }
 
     @Override
@@ -835,8 +827,32 @@ public class GuiScreenGameRuleEditor extends GuiScreen {
                 createRuleComponents();
             }
         } else if (Mouse.getEventDWheel() != 0) {
-            int scrollAmount = Mouse.getEventDWheel() > 0 ? -1 : 1;
-            
+            int delta = Mouse.getEventDWheel();
+
+            // 鼠标悬停在轮换式布尔按钮上时，优先切换规则値而不滚动列表
+            // （mouseY需补偿scrollSubOffset，与mouseClicked中的命中检测保持一致）
+            // When the mouse hovers over a cyclable boolean button, cycle the rule value
+            // instead of scrolling the list (mouseY is compensated by scrollSubOffset,
+            // consistent with hit testing in mouseClicked)
+            int wheelPanelBottom = this.height - 50;
+            if (mouseY >= CONTENT_TOP && mouseY <= wheelPanelBottom) {
+                int adjustedWheelMouseY = mouseY + Math.round(scrollSubOffset);
+                for (GuiComponentWrapper wrapper : ruleComponents.values()) {
+                    if (wrapper.type == ComponentType.BOOLEAN_BUTTON &&
+                            wrapper.component instanceof GuiCyclableButton) {
+                        GuiCyclableButton btn = (GuiCyclableButton) wrapper.component;
+                        if (btn.enabled &&
+                                mouseX >= btn.x && mouseX < btn.x + btn.width &&
+                                adjustedWheelMouseY >= btn.y && adjustedWheelMouseY < btn.y + btn.height) {
+                            btn.mouseScrolled(delta);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            int scrollAmount = delta > 0 ? -1 : 1;
+
             // 滚轮：先重新计算maxScrollPosition，再限制targetScrollPosition
             // Wheel: recalculate maxScrollPosition first, then clamp targetScrollPosition
             int panelBottom = this.height - 50;

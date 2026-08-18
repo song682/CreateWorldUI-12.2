@@ -11,8 +11,8 @@ import net.minecraft.world.WorldType;
 public class WorldTab extends AbstractScreenTab {
     private GuiTextField seedField;
     private GuiCyclableButton worldTypeButton;
-    private GuiButton generateStructuresButton;
-    private GuiButton bonusChestButton;
+    private GuiCyclableButton generateStructuresButton;
+    private GuiCyclableButton bonusChestButton;
     private GuiButton customizeButton;
 
     public WorldTab() {
@@ -55,16 +55,21 @@ public class WorldTab extends AbstractScreenTab {
                 150, 20, I18n.format("selectWorld.customizeType"));
         addButton(customizeButton);
 
-        // Create generate structures button
-        // 创建生成建筑按钮
-        generateStructuresButton = new GuiButton(4, width / 2 + 110, height / 2 + 15,
-                44, 20, getGenerateStructuresText());
+        // Create generate structures button (cyclable, toggled via click or scroll wheel)
+        // 创建生成建筑按钮（轮换式，可通过点击或滚轮切换）
+        generateStructuresButton = new GuiCyclableButton(4, width / 2 + 110, height / 2 + 15,
+                44, 20, this::getGenerateStructuresText,
+                direction -> tabManager.setGenerateStructures(!getGenerateStructures()));
         addButton(generateStructuresButton);
 
-        // Create bonus chest button
-        // 创建奖励筱按钮
-        bonusChestButton = new GuiButton(7, width / 2 + 110, height / 2 - 15,
-                44, 20, getBonusChestText());
+        // Create bonus chest button (cyclable, toggled via click or scroll wheel)
+        // 创建奖励筱按钮（轮换式，可通过点击或滚轮切换）
+        bonusChestButton = new GuiCyclableButton(7, width / 2 + 110, height / 2 - 15,
+                44, 20, this::getBonusChestText, direction -> {
+            if (!getHardcore()) {
+                tabManager.setBonusChest(!getBonusChest());
+            }
+        });
         addButton(bonusChestButton);
 
         // Initially hide all buttons
@@ -106,8 +111,8 @@ public class WorldTab extends AbstractScreenTab {
             customizeButton.enabled = false;
         }
 
-        generateStructuresButton.displayString = getGenerateStructuresText();
-        bonusChestButton.displayString = getBonusChestText();
+        if (generateStructuresButton != null) generateStructuresButton.updateText();
+        if (bonusChestButton != null) bonusChestButton.updateText();
 
         // Update bonus chest button state based on hardcore mode
         // 根据硬核模式更新奖励筱按钮状态
@@ -116,17 +121,9 @@ public class WorldTab extends AbstractScreenTab {
 
     @Override
     public void actionPerformed(GuiButton button) {
-        System.out.println("WorldTab: Button clicked: " + button.id);
-
+        // Handle customize button
+        // 处理自定义按钮
         switch (button.id) {
-            case 4: // generate structures / 生成建筑
-                tabManager.setGenerateStructures(!getGenerateStructures());
-                break;
-            case 7: // bonus chest / 奖励筱
-                if (!getHardcore()) {
-                    tabManager.setBonusChest(!getBonusChest());
-                }
-                break;
             case 8: // customize / 自定义
                 // Open the customize screen
                 // 打开自定义界面
