@@ -149,10 +149,12 @@ public class GuiWorldSettings extends GuiScreen implements GuiYesNoCallback {
             boolean currentLocked = mc.world.getWorldInfo().isDifficultyLocked();
 
             if (!currentLocked) {
-                // 锁定操作（需要确认）/ Lock action (requires confirmation)
+                // 锁定操作（需要确认）——使用原版 difficulty.lock.* 翻译键，与原版 GuiOptions 的锁定确认完全一致
+                // Lock action (requires confirmation) - uses the vanilla difficulty.lock.*
+                // translation keys, identical to the vanilla GuiOptions lock confirmation
                 mc.displayGuiScreen(new GuiYesNo(this,
-                    I18n.format("createworldui.lock.confirm.title"),
-                    I18n.format("createworldui.lock.confirm.line",
+                    I18n.format("difficulty.lock.title"),
+                    I18n.format("difficulty.lock.question",
                         I18n.format(mc.world.getWorldInfo().getDifficulty().getDifficultyResourceKey())),
                     CONFIRM_LOCK_ID));
             } else if (allowUnlock()) {

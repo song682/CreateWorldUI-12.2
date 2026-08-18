@@ -35,8 +35,6 @@ createworldui.button.worldSettings=World Settings...
 
 ## World Settings Screen
 createworldui.worldsettings.title=World Settings
-createworldui.lock.confirm.title=Lock difficulty?
-createworldui.lock.confirm.line=This will lock the difficulty to: %s
 createworldui.unlock.confirm.title=Unlock difficulty?
 createworldui.unlock.confirm.line=Are you sure you want to unlock the difficulty?
 createworldui.gamerules.tooltip.needCreativeAndCheats=Requires Creative mode and cheats enabled
