@@ -29,10 +29,10 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.12.2-0.0.2'
-group = 'decok.dfcdvadstf.createworldui' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = 'ModernCreateWorldUI'
-
+// Artifact coordinates are defined in gradle.properties / 产物坐标在 gradle.properties 中定义
+version = mod_version
+group = mod_group // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = archives_base_name
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 tasks.withType(JavaCompile) {
