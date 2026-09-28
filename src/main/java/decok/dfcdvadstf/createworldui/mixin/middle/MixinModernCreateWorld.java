@@ -164,8 +164,15 @@ public abstract class MixinModernCreateWorld extends GuiScreen {
      */
     @Unique
     private void modernWorldCreatingUI$ensureFieldsNotNull() {
-        this.worldName = I18n.format("selectWorld.newWorld");
-        modernWorldCreatingUI$logger.info("Set default world name: " + this.worldName);
+        // Only fill in the default when the field is truly null — this runs on every initGui
+        // (resize, returning from sub-screens, recreateFromExistingWorld), and an unconditional
+        // overwrite would wipe whatever name the screen already carries.
+        // 仅在字段确实为 null 时才填默认名——本方法会在每次 initGui（resize、从子界面返回、
+        // recreateFromExistingWorld）时执行，无条件覆盖会抹掉屏幕上已有的名字。
+        if (this.worldName == null) {
+            this.worldName = I18n.format("selectWorld.newWorld");
+            modernWorldCreatingUI$logger.info("Set default world name: " + this.worldName);
+        }
 
         if (this.worldSeed == null) {
             this.worldSeed = "";
@@ -360,6 +367,11 @@ public abstract class MixinModernCreateWorld extends GuiScreen {
             // 在创建世界前同步难度锁定状态
             if (modernWorldCreatingUI$tabManager != null) {
                 DifficultyApplier.setDifficultyLocked(modernWorldCreatingUI$tabManager.isDifficultyLocked());
+                // Push the world name back into vanilla's own text field and save-dir calculation —
+                // vanilla's actionPerformed reads those (not the worldName field) when creating.
+                // 把世界名推回原版自己的输入框与存档目录计算——原版 actionPerformed 创建世界时
+                // 读取的是那两处（而非 worldName 字段）。
+                modernWorldCreatingUI$tabManager.syncWorldNameToVanilla();
             }
             // 让原版继续处理创建逻辑
             return;

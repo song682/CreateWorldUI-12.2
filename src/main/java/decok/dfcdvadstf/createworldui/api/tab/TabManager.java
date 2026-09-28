@@ -99,6 +99,24 @@ public class TabManager {
         return trimmedName;
     }
 
+    /**
+     * <p>Sync the world name back to the two places vanilla actually reads at creation time:
+     * vanilla's own name text field (used as the world display name) and the recalculated
+     * save-dir name (used as the save folder name). Vanilla's {@code keyTyped} is cancelled
+     * by the mixin, so vanilla never refreshes either of them itself — without this sync the
+     * created world would always be named "New World".</p>
+     * <p>把世界名同步回原版创建时真正读取的两处：原版自己的名称输入框（用作世界显示名）和
+     * 重算的存档目录名（用作存档文件夹名）。原版的 {@code keyTyped} 已被 mixin 取消，原版
+     * 自己不会刷新这两处——少了这次同步，创建出的世界将永远是 "New World"。</p>
+     */
+    public void syncWorldNameToVanilla() {
+        String finalName = getWorldNameForCreation();
+        access.createWorldUI$setWorldName(finalName);
+        access.createWorldUI$getWorldNameField().setText(finalName);
+        access.createWorldUI$invokeCalcSaveDirName();
+        System.out.println("TabManager: Synced world name to vanilla: " + finalName);
+    }
+
     // Add a button to the Mixin's button list
     // 添加按钮到 Mixin 的按钮列表
     public void addButton(GuiButton button) {

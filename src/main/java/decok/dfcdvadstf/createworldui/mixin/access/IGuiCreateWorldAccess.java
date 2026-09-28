@@ -2,8 +2,10 @@ package decok.dfcdvadstf.createworldui.mixin.access;
 
 import net.minecraft.client.gui.GuiCreateWorld;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 /**
  * <p>Accessor mixin interface exposing the private fields of vanilla {@code GuiCreateWorld}.</p>
@@ -61,6 +63,20 @@ public interface IGuiCreateWorldAccess {
     // === World name / 世界名称 ===
     @Accessor("worldName") String createWorldUI$getWorldName();
     @Accessor("worldName") void   createWorldUI$setWorldName(String value);
+
+    // === Vanilla world name text field / 原版世界名称输入框 ===
+    // Vanilla reads this field's text (not the {@code worldName} field) as the world's
+    // display name when creating the world, so MOD input must be pushed back into it
+    // before creation.
+    // 原版创建世界时读取的是这个输入框的文本（而非 {@code worldName} 字段）作为世界的
+    // 显示名，因此 MOD 的输入必须在创建前写回这里。
+    @Accessor("worldNameField") GuiTextField createWorldUI$getWorldNameField();
+
+    // === Vanilla save-dir name recalculation / 原版存档目录名重算 ===
+    // Recomputes {@code saveDirName} from the text field (sanitizes illegal characters,
+    // resolves name collisions). Must be invoked after syncing the world name.
+    // 从输入框重算 {@code saveDirName}（替换非法字符、处理重名冲突）。同步世界名后必须调用。
+    @Invoker("calcSaveDirName") void createWorldUI$invokeCalcSaveDirName();
 
     // === Game mode / 游戏模式 ===
     @Accessor("gameMode") String createWorldUI$getGameMode();
