@@ -367,11 +367,11 @@ public abstract class MixinModernCreateWorld extends GuiScreen {
             // 在创建世界前同步难度锁定状态
             if (modernWorldCreatingUI$tabManager != null) {
                 DifficultyApplier.setDifficultyLocked(modernWorldCreatingUI$tabManager.isDifficultyLocked());
-                // Push the world name back into vanilla's own text field and save-dir calculation —
-                // vanilla's actionPerformed reads those (not the worldName field) when creating.
-                // 把世界名推回原版自己的输入框与存档目录计算——原版 actionPerformed 创建世界时
-                // 读取的是那两处（而非 worldName 字段）。
-                modernWorldCreatingUI$tabManager.syncWorldNameToVanilla();
+                // Push the name/seed back into vanilla's own text fields and save-dir calculation —
+                // vanilla's actionPerformed reads those (not the worldName/worldSeed fields) when creating.
+                // 把名字/种子推回原版自己的输入框与存档目录计算——原版 actionPerformed 创建世界时
+                // 读取的是那些输入框（而非 worldName/worldSeed 字段）。
+                modernWorldCreatingUI$tabManager.syncCreationInputsToVanilla();
             }
             // 让原版继续处理创建逻辑
             return;

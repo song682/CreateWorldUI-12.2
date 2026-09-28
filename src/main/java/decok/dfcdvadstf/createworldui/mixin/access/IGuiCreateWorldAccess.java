@@ -86,6 +86,13 @@ public interface IGuiCreateWorldAccess {
     @Accessor("worldSeed") String createWorldUI$getSeed();
     @Accessor("worldSeed") void   createWorldUI$setSeed(String value);
 
+    // === Vanilla seed text field / 原版种子输入框 ===
+    // Vanilla parses the seed from this field's text (not the {@code worldSeed} field)
+    // when creating the world, so MOD input must be pushed back into it before creation.
+    // 原版创建世界时解析的是这个输入框的文本（而非 {@code worldSeed} 字段）作为世界
+    // 种子，因此 MOD 的输入必须在创建前写回这里。
+    @Accessor("worldSeedField") GuiTextField createWorldUI$getWorldSeedField();
+
     // === World type index / 世界类型索引 ===
     @Accessor("selectedIndex") int  createWorldUI$getWorldTypeIndex();
     @Accessor("selectedIndex") void createWorldUI$setWorldTypeIndex(int value);

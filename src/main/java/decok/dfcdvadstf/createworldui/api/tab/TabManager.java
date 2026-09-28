@@ -100,21 +100,32 @@ public class TabManager {
     }
 
     /**
-     * <p>Sync the world name back to the two places vanilla actually reads at creation time:
-     * vanilla's own name text field (used as the world display name) and the recalculated
-     * save-dir name (used as the save folder name). Vanilla's {@code keyTyped} is cancelled
-     * by the mixin, so vanilla never refreshes either of them itself — without this sync the
-     * created world would always be named "New World".</p>
-     * <p>把世界名同步回原版创建时真正读取的两处：原版自己的名称输入框（用作世界显示名）和
-     * 重算的存档目录名（用作存档文件夹名）。原版的 {@code keyTyped} 已被 mixin 取消，原版
-     * 自己不会刷新这两处——少了这次同步，创建出的世界将永远是 "New World"。</p>
+     * <p>Sync the MOD's creation inputs back to the places vanilla actually reads at creation
+     * time: the world name is pushed into vanilla's own name text field (world display name)
+     * plus the recalculated save-dir name (save folder name), and the seed is pushed into
+     * vanilla's own seed text field (vanilla parses the seed from its text). Vanilla's
+     * {@code keyTyped} is cancelled by the mixin, so vanilla never refreshes these fields
+     * itself — without this sync the created world would always be named "New World" and
+     * would ignore the entered seed.</p>
+     * <p>把 MOD 的创建输入同步回原版创建时真正读取的位置：世界名推入原版自己的名称输入框
+     * （用作世界显示名）并重算存档目录名（用作存档文件夹名）；种子推入原版自己的种子输入框
+     * （原版从中解析种子）。原版的 {@code keyTyped} 已被 mixin 取消，原版自己不会刷新这些
+     * 输入框——少了这次同步，创建出的世界将永远是 "New World"，且输入的种子会被忽略。</p>
      */
-    public void syncWorldNameToVanilla() {
+    public void syncCreationInputsToVanilla() {
+        // World name — display name + save-dir name (folder name).
+        // 世界名——显示名 + 存档目录名（文件夹名）。
         String finalName = getWorldNameForCreation();
         access.createWorldUI$setWorldName(finalName);
         access.createWorldUI$getWorldNameField().setText(finalName);
         access.createWorldUI$invokeCalcSaveDirName();
-        System.out.println("TabManager: Synced world name to vanilla: " + finalName);
+
+        // Seed — vanilla parses it from its own seed text field.
+        // 种子——原版从它自己的种子输入框解析。
+        String seed = access.createWorldUI$getSeed();
+        access.createWorldUI$getWorldSeedField().setText(seed != null ? seed : "");
+
+        System.out.println("TabManager: Synced creation inputs to vanilla: name=" + finalName + ", seed=" + seed);
     }
 
     // Add a button to the Mixin's button list
